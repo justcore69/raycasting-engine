@@ -5,6 +5,8 @@
 #include"Game.h"
 #include"GameObjects/TestDot.h"
 
+using namespace glm;
+
 static class Render
 {
 public:

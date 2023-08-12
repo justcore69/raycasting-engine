@@ -151,19 +151,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Utils\Color.cpp" />
+    <ClCompile Include="AssetLoader.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="src\utils\Color.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Render.cpp" />
-    <ClCompile Include="src\GameObjects\TestDot.cpp" />
-    <ClCompile Include="src\Utils\Vec2.cpp" />
+    <ClCompile Include="src\gameObjects\TestDot.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Utils\Color.h" />
+    <ClInclude Include="AssetLoader.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="src\utils\Color.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\Render.h" />
-    <ClInclude Include="src\GameObjects\TestDot.h" />
-    <ClInclude Include="src\Utils\Vec2.h" />
+    <ClInclude Include="src\gameObjects\TestDot.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

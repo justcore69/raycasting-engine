@@ -7,6 +7,8 @@ static class Game
 public:
 	static bool gameShouldClose;
 
+	static char* map;
+
 	static int time;
 	static float deltaTime;
 	static float normTime;

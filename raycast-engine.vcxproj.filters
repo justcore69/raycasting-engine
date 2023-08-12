@@ -24,13 +24,16 @@
     <ClCompile Include="src\Render.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameObjects\TestDot.cpp">
+    <ClCompile Include="src\gameObjects\TestDot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Utils\Vec2.cpp">
+    <ClCompile Include="src\utils\Color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Utils\Color.cpp">
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,13 +44,16 @@
     <ClInclude Include="src\Render.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameObjects\TestDot.h">
+    <ClInclude Include="src\gameObjects\TestDot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Utils\Vec2.h">
+    <ClInclude Include="src\utils\Color.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Utils\Color.h">
+    <ClInclude Include="Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -16,12 +16,21 @@ void Game::handleEvents() {
 	SDL_Event e;
 	SDL_PollEvent(&e);
 
-	switch (e.type)
-	{
-	case(SDL_QUIT):
-		gameShouldClose = true;
-		break;
-	}
+    if (e.type == SDL_QUIT) {
+        gameShouldClose = true;
+    }
+    else if (e.type == SDL_KEYDOWN) {
+        // Handle key presses
+        switch (e.key.keysym.sym) {
+        case SDLK_ESCAPE:
+            gameShouldClose = true;
+            break;
+        case SDLK_SPACE:
+            // Handle space key press
+            break;
+            // Add more cases for other keys as needed
+        }
+    }
 }
 
 void Game::update() {

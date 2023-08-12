@@ -3,7 +3,7 @@
 SDL_Window* Render::window = NULL;
 SDL_Renderer* Render::renderer = NULL;
 
-TestDot* Render::dot = new TestDot(Vec2(SCREEN_WIDTH, SCREEN_HEIGHT), Color::black);
+TestDot* Render::dot = new TestDot(vec2(SCREEN_WIDTH, SCREEN_HEIGHT), Color::black);
 
 bool Render::init()
 {
@@ -26,9 +26,9 @@ void Render::render() {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
 
-    dot->position = Vec2(SCREEN_WIDTH/2 + sinf(Game::normTime) * 64, SCREEN_HEIGHT/2 + cosf(Game::normTime) * 64);
+    dot->position = vec2(SCREEN_WIDTH/2 + sinf(Game::normTime) * 64, SCREEN_HEIGHT/2 + cosf(Game::normTime) * 64);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderDrawPoint(renderer, dot->position.X, dot->position.Y);
+    SDL_RenderDrawPoint(renderer, dot->position.x, dot->position.y);
 
     SDL_RenderPresent(renderer);
 }

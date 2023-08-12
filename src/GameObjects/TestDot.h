@@ -1,12 +1,14 @@
 #pragma once
-#include"Utils/Vec2.h"
-#include"Utils/Color.h"
+#include"utils/glm/vec2.hpp"
+#include"utils/Color.h"
+
+using namespace glm;
 
 class TestDot
 {
 public:
-	Vec2 position = Vec2(0, 0);
+	vec2 position = vec2(0, 0);
 	Color color = Color::black;
 
-	TestDot(Vec2 pos, Color col);
+	TestDot(vec2 pos, Color col);
 };
