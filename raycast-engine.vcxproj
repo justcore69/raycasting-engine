@@ -151,8 +151,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AssetLoader.cpp" />
-    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="src\AssetLoader.cpp" />
+    <ClCompile Include="src\gameObjects\Player.cpp" />
     <ClCompile Include="src\utils\Color.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Main.cpp" />
@@ -160,8 +160,8 @@
     <ClCompile Include="src\gameObjects\TestDot.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AssetLoader.h" />
-    <ClInclude Include="Player.h" />
+    <ClInclude Include="src\AssetLoader.h" />
+    <ClInclude Include="src\gameObjects\Player.h" />
     <ClInclude Include="src\utils\Color.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\Render.h" />

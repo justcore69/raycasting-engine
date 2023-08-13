@@ -30,10 +30,10 @@
     <ClCompile Include="src\utils\Color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
+    <ClCompile Include="src\gameObjects\Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AssetLoader.cpp">
+    <ClCompile Include="src\AssetLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,10 +50,10 @@
     <ClInclude Include="src\utils\Color.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
+    <ClInclude Include="src\gameObjects\Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AssetLoader.h">
+    <ClInclude Include="src\AssetLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

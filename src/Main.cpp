@@ -11,7 +11,7 @@ int main(int argc, char* args[])
     while (!Game::gameShouldClose) {
         Game::handleEvents();
         Game::update();
-        Render::render();
+        Render::renderEverything();
     }
 
     Render::destroy();

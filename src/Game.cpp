@@ -1,6 +1,11 @@
 #include "Game.h"
 
 bool Game::gameShouldClose = false;
+bool Game::debugMode = true;
+
+std::vector<std::string> Game::map = {};
+
+Player* Game::player = nullptr;
 
 // Time
 int Game::time = 0;
@@ -9,6 +14,12 @@ float Game::prevFrameTime = 0;
 float Game::normTime = 0;
 
 void Game::init() {
+
+    map = AssetLoader::loadMap("assets/test_map.txt");
+
+    player = new Player();
+    player->position = player->getMapPosition(map);
+
 	std::cout << "Game initialized.\n";
 }
 
@@ -43,6 +54,10 @@ void Game::update() {
 	normTime += deltaTime;
 
 	std::cout << "normTime: " << normTime << "; deltaTime: " << deltaTime << '\n';
+    //
+
+    player->position.y = player->getMapPosition(map).y + cosf(normTime);
+    player->rotate(M_PI / 180);
 }
 
 void Game::close() {

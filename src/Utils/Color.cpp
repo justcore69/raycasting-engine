@@ -2,6 +2,7 @@
 
 Color const Color::white = Color(255, 255, 255);
 Color const Color::black = Color(0, 0, 0);
+Color const Color::gray = Color(64, 64, 64);
 Color const Color::red = Color(255, 0, 0);
 Color const Color::green = Color(0, 255, 0);
 Color const Color::blue = Color(0, 0, 255);
