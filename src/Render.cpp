@@ -1,9 +1,9 @@
 #include "Render.h"
 
+float Render::fov = 90 * (M_PI / 180);
+
 SDL_Window* Render::window = NULL;
 SDL_Renderer* Render::renderer = NULL;
-
-TestDot* Render::dot = new TestDot(vec2(SCREEN_WIDTH, SCREEN_HEIGHT), Color::black);
 
 bool Render::init()
 {
@@ -66,8 +66,8 @@ void Render::drawWalls(Player player) {
 void Render::drawCircle(int centerX, int centerY, int radius) {
     for (int angle = 0; angle < 360; angle++) {
         double radians = angle * (M_PI / 180.0);
-        int x = static_cast<int>(centerX + radius * std::cos(radians));
-        int y = static_cast<int>(centerY + radius * std::sin(radians));
+        int x = static_cast<int>(centerX + radius * cosf(radians));
+        int y = static_cast<int>(centerY + radius * sinf(radians));
         SDL_RenderDrawPoint(renderer, x, y);
     }
 }
@@ -108,13 +108,77 @@ void Render::drawPreview() {
         }
     }
 
+    vec2 playerScrPos = vec2(Game::player->position.x * cellSize, Game::player->position.y * cellSize);
+
+    // Draw rays
+
+    for (int i = 0; i < 3; i++) {
+        float step = fov / 3;
+
+        vec2 rayDir = vec2(playerScrPos.x + 64 * cosf(Game::player->rotationAngleRad + (step * i) - M_PI / 4),
+            playerScrPos.y + 64 * -sinf(Game::player->rotationAngleRad + (step * i) - M_PI / 4));
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+        SDL_RenderDrawLineF(renderer, playerScrPos.x, playerScrPos.y, rayDir.x, rayDir.y);
+
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        std::vector<vec2> points = getPointsDDA(playerScrPos.x, playerScrPos.y, rayDir.x, rayDir.y);
+        for (vec2 p : points) {
+            drawCircle(p.x, p.y, 1);
+        }
+    }
+
     // Draw player
 
+    // circle
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-    drawCircle(Game::player->position.x * cellSize, Game::player->position.y * cellSize, cellSize / 2.5f);
-    SDL_RenderDrawLine(renderer, 
-        Game::player->position.x * cellSize, 
-        Game::player->position.y * cellSize, 
-        Game::player->position.x * cellSize + cosf(Game::player->rotationAngleRad) * (cellSize / 2.5f),
-        Game::player->position.y * cellSize + sinf(-Game::player->rotationAngleRad) * (cellSize / 2.5f));
+    drawCircle(playerScrPos.x, playerScrPos.y, cellSize / 2.5f);
+
+    // angle
+    SDL_RenderDrawLine(renderer,
+        playerScrPos.x,
+        playerScrPos.y,
+        playerScrPos.x + cosf(Game::player->rotationAngleRad) * (cellSize / 2.5f),
+        playerScrPos.y + sinf(-Game::player->rotationAngleRad) * (cellSize / 2.5f));
+
+    // direction vector
+    //SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
+    //SDL_RenderDrawLine(renderer,
+    //    Game::player->position.x * cellSize + cosf(Game::player->rotationAngleRad) * (cellSize / 2.5f),
+    //    Game::player->position.y * cellSize + sinf(-Game::player->rotationAngleRad) * (cellSize / 2.5f),
+    //    Game::player->position.x * cellSize + cosf(Game::player->rotationAngleRad) * (cellSize / 2.5f) + Game::player->direction.x * (cellSize / 2.5f),
+    //    Game::player->position.y * cellSize + sinf(-Game::player->rotationAngleRad) * (cellSize / 2.5f) + Game::player->direction.y * (cellSize / 2.5f));
+    //
+    //Debug::printVector("direction", Game::player->direction);
+}
+
+std::vector<vec2> Render::getPointsDDA(const float x1, const float y1, const float x2, const float y2) {
+    std::vector<vec2> points;
+
+    int dx = x2 - x1;
+    int dy = y2 - y1;
+
+    int steps = std::max(std::abs(dx), std::abs(dy));
+
+    float xIncrement = static_cast<float>(dx) / steps;
+    float yIncrement = static_cast<float>(dy) / steps;
+
+    float x = static_cast<float>(x1);
+    float y = static_cast<float>(y1);
+
+    for (int i = 0; i <= steps; ++i) {
+        // Calculate the fractional parts of x and y
+        float fracX = x - static_cast<int>(x);
+        float fracY = y - static_cast<int>(y);
+
+        // Check if the fractional parts are close to 0 or 1
+        if (fracX <= 0.01f || fracX >= 0.99f || fracY <= 0.01f || fracY >= 0.99f) {
+            points.emplace_back(vec2(x, y));
+        }
+
+        x += xIncrement;
+        y += yIncrement;
+    }
+
+    return points;
 }

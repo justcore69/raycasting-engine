@@ -2,6 +2,7 @@
 #include"utils/glm/vec2.hpp"
 
 #include"Game.h"
+#include"utils/Debug.h"
 
 using namespace glm;
 
@@ -10,11 +11,22 @@ class Game;
 class Player
 {
 public:
+	vec2 startPosition;
 	vec2 position;
-	float rotationAngleRad;
 	vec2 direction;
+	float movementSpeed = 1;
+	float rotationSpeed = 2;
+	float rotationAngleRad = 0;
+
+	bool keyW = false;
+	bool keyA = false;
+	bool keyS = false;
+	bool keyD = false;
 
 	Player();
+
+	void update();
+	void inputEvents();
 
 	void move(vec2 velocity);
 	void rotate(float angleRad); // 1 left; -1 right;

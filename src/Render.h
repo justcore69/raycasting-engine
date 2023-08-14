@@ -2,8 +2,9 @@
 #include<SDL.h>
 #include<iostream>
 
+#include"utils/Debug.h"
+#include"utils/Color.h"
 #include"Game.h"
-#include"GameObjects/TestDot.h"
 
 #include"gameObjects/Player.h"
 
@@ -14,6 +15,8 @@ static class Render
 public:
 	static const int SCREEN_WIDTH = 640;
 	static const int SCREEN_HEIGHT = 480;
+
+	static float fov;
 
 	static SDL_Window* window;
 	static SDL_Renderer* renderer;
@@ -31,6 +34,6 @@ public:
 
 	static void drawPreview();
 
-	static TestDot* dot;
+	static std::vector<vec2> getPointsDDA(const float x1, const float y1, const float x2, const float y2);
 };
 

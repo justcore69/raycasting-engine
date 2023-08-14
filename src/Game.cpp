@@ -18,48 +18,72 @@ void Game::init() {
     map = AssetLoader::loadMap("assets/test_map.txt");
 
     player = new Player();
-    player->position = player->getMapPosition(map);
+    player->startPosition = player->getMapPosition(map);
+    player->position = player->startPosition;
 
-	std::cout << "Game initialized.\n";
+    std::cout << "Game initialized.\n";
 }
 
 void Game::handleEvents() {
-	SDL_Event e;
-	SDL_PollEvent(&e);
-
-    if (e.type == SDL_QUIT) {
-        gameShouldClose = true;
-    }
-    else if (e.type == SDL_KEYDOWN) {
-        // Handle key presses
-        switch (e.key.keysym.sym) {
-        case SDLK_ESCAPE:
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) {
             gameShouldClose = true;
-            break;
-        case SDLK_SPACE:
-            // Handle space key press
-            break;
-            // Add more cases for other keys as needed
+        }
+        else if (event.type == SDL_KEYDOWN) {
+            switch (event.key.keysym.sym) {
+            case SDLK_w:
+                player->keyW = true;
+                break;
+            case SDLK_a:
+                player->keyA = true;
+                break;
+            case SDLK_s:
+                player->keyS = true;
+                break;
+            case SDLK_d:
+                player->keyD = true;
+                break;
+            case SDLK_ESCAPE:
+                gameShouldClose = true;
+                break;
+            }
+        }
+        else if (event.type == SDL_KEYUP) {
+            switch (event.key.keysym.sym) {
+            case SDLK_w:
+                player->keyW = false;
+                break;
+            case SDLK_a:
+                player->keyA = false;
+                break;
+            case SDLK_s:
+                player->keyS = false;
+                break;
+            case SDLK_d:
+                player->keyD = false;
+                break;
+            }
         }
     }
 }
 
 void Game::update() {
-	// Time handling
-	Uint32 currentFrameTime = SDL_GetTicks();
-	deltaTime = (currentFrameTime - prevFrameTime) / 1000.0f; // Convert to seconds
-	prevFrameTime = currentFrameTime;
+    // Time handling
+    Uint32 currentFrameTime = SDL_GetTicks();
+    deltaTime = (currentFrameTime - prevFrameTime) / 1000.0f; // Convert to seconds
+    prevFrameTime = currentFrameTime;
 
-	time++;
-	normTime += deltaTime;
+    time++;
+    normTime += deltaTime;
 
-	std::cout << "normTime: " << normTime << "; deltaTime: " << deltaTime << '\n';
+    std::cout << "normTime: " << normTime << "; deltaTime: " << deltaTime << '\n';
     //
 
-    player->position.y = player->getMapPosition(map).y + cosf(normTime);
-    player->rotate(M_PI / 180);
+    player->update();
+
 }
 
 void Game::close() {
-	std::cout << "Game closed.\n";
+    std::cout << "Game closed.\n";
 }

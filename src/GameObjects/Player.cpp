@@ -6,12 +6,40 @@ Player::Player()
     direction = vec2(1, 0);
 }
 
+void Player::update() {
+    //position.y = startPosition.y + cosf(Game::normTime);
+    //rotate(M_PI / 180);
+
+    direction = vec2(cosf(rotationAngleRad), sinf(-rotationAngleRad));
+    inputEvents();
+}
+
+void Player::inputEvents() {
+    // Movement
+
+    std::cout << keyW << keyA << keyS << keyD << '\n';
+    Debug::printVector("dir", direction);
+
+    if (keyW) { // Forward
+        move(direction * movementSpeed);
+    }
+    if (keyA) { // Rotate left
+        rotate(rotationSpeed);
+    }
+    if (keyS) { // Backward
+        move(-direction * movementSpeed);
+    }
+    if (keyD) { // Rotate right
+        rotate(-rotationSpeed);
+    }
+}
+
 void Player::move(vec2 velocity) {
-    position += velocity;
+    position += velocity * Game::deltaTime;
 }
 
 void Player::rotate(float angleRad) {
-    rotationAngleRad += angleRad;
+    rotationAngleRad += angleRad * Game::deltaTime;;
 }
 
 vec2 Player::getMapPosition(std::vector<std::string> map) {
