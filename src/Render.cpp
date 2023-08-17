@@ -146,6 +146,7 @@ void Render::drawPreview() {
 }
 
 std::vector<vec2> Render::getRayIntersections(float x1, float y1, float x2, float y2) {
+    // Setup
     std::vector<vec2> points;
 
     float dx = x2 - x1;
@@ -157,21 +158,16 @@ std::vector<vec2> Render::getRayIntersections(float x1, float y1, float x2, floa
     vec2 dir = normalize(vec2(dx, dy));
     float angle = atan2f(dir.y, dir.x);
 
-    float firstX = 0;
-    float firstY = 0;
-
-    // Check the quadrants
     bool right;
     bool down;
+
     ivec2 dirRound = ivec2(ceil(dir.x), ceil(dir.y));
     right = dirRound.x == 1;
     down = dirRound.y == 1;
 
-    firstX = right ? ceil(x1) : floor(x1);
-    firstY = y1 + (firstX - x1) * m;
-
-    Debug::printVector("dirRound", dirRound, false);
-    std::cout << "slope: " << m << '\n';
+    // Vertical lines handling
+    float firstX = right ? ceil(x1) : floor(x1);
+    float firstY = y1 + (firstX - x1) * m;
     
     points.emplace_back(firstX, firstY);
 
@@ -181,6 +177,23 @@ std::vector<vec2> Render::getRayIntersections(float x1, float y1, float x2, floa
     for (int i = 0; i < dof; i++) {
         x += right ? 1 : -1;
         y += right ? m : -m;
+        points.emplace_back(x, y);
+    }
+
+    // Horizontal lines handling
+    if (dx != 0) m = dx / dy;
+
+    firstY = down ? ceil(y1) : floor(y1);
+    firstX = x1 + (firstY - y1) * m;
+
+    points.emplace_back(firstX, firstY);
+
+    x = firstX;
+    y = firstY;
+
+    for (int i = 0; i < dof; i++) {
+        x += down ? m : -m;
+        y += down ? 1 : -1;
         points.emplace_back(x, y);
     }
 
