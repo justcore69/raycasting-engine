@@ -1,13 +1,23 @@
 #include "Debug.h"
 
-void Debug::printVector(std::string name, vec2 vec)
+void Debug::printVector(std::string name, vec2 vec, bool endl)
 {
-	std::cout << name << ": vec2(" << vec.x << ", " << vec.y << ");\n";
+	if (endl) {
+		std::cout << name << ": vec2(" << vec.x << ", " << vec.y << ");\n";
+	}
+	else {
+		std::cout << name << ": vec2(" << vec.x << ", " << vec.y << "); ";
+	}
 }
 
-void Debug::printVector(std::string name, vec3 vec)
+void Debug::printVector(std::string name, vec3 vec, bool endl)
 {
-	std::cout << name << ": vec3(" << vec.x << ", " << vec.y << ", " << vec.z << ");\n";
+	if (endl) {
+		std::cout << name << ": vec3(" << vec.x << ", " << vec.y << ", " << vec.z << ");\n";
+	}
+	else {
+		std::cout << name << ": vec3(" << vec.x << ", " << vec.y << ", " << vec.z << "); ";
+	}
 }
 
 void Debug::print(std::string message) {

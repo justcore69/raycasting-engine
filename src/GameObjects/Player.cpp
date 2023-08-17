@@ -17,8 +17,8 @@ void Player::update() {
 void Player::inputEvents() {
     // Movement
 
-    std::cout << keyW << keyA << keyS << keyD << '\n';
-    Debug::printVector("dir", direction);
+    //std::cout << keyW << keyA << keyS << keyD << '\n';
+    //Debug::printVector("dir", direction);
 
     if (keyW) { // Forward
         move(direction * movementSpeed);
@@ -50,7 +50,7 @@ vec2 Player::getMapPosition(std::vector<std::string> map) {
         for (int x = 0; x < Game::map[y].size(); x++) {
             if (Game::map[y][x] == 'P') {
                 std::cout << "Player position on the map is vec(" << x << ", " << y << ");\n";
-                return vec2(x + 0.5f, y + 0.5f);
+                return vec2(x, y);
             }
         }
     }

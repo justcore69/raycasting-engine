@@ -1,12 +1,16 @@
 #include "Render.h"
 
-float Render::fov = 90 * (M_PI / 180);
+float Render::fov = 0;
+int Render::dof = 0;
 
 SDL_Window* Render::window = NULL;
 SDL_Renderer* Render::renderer = NULL;
 
 bool Render::init()
 {
+    fov = 90 * (M_PI / 180);
+    dof = 6;
+
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
@@ -111,20 +115,19 @@ void Render::drawPreview() {
     vec2 playerScrPos = vec2(Game::player->position.x * cellSize, Game::player->position.y * cellSize);
 
     // Draw rays
+    for (int i = 1; i < 2; i++) {
+        float step = fov / 2;
 
-    for (int i = 0; i < 3; i++) {
-        float step = fov / 3;
-
-        vec2 rayDir = vec2(playerScrPos.x + 64 * cosf(Game::player->rotationAngleRad + (step * i) - M_PI / 4),
-            playerScrPos.y + 64 * -sinf(Game::player->rotationAngleRad + (step * i) - M_PI / 4));
+        vec2 ray = vec2(playerScrPos.x + 64 * cosf(Game::player->rotationAngleRad + (step * i) - fov/2),
+            playerScrPos.y + 64 * -sinf(Game::player->rotationAngleRad + (step * i) - fov/2));
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-        SDL_RenderDrawLineF(renderer, playerScrPos.x, playerScrPos.y, rayDir.x, rayDir.y);
+        SDL_RenderDrawLineF(renderer, playerScrPos.x, playerScrPos.y, ray.x, ray.y);
 
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        std::vector<vec2> points = getPointsDDA(playerScrPos.x, playerScrPos.y, rayDir.x, rayDir.y);
+        std::vector<vec2> points = getRayIntersections(playerScrPos.x/cellSize, playerScrPos.y / cellSize, ray.x / cellSize, ray.y / cellSize);
         for (vec2 p : points) {
-            drawCircle(p.x, p.y, 1);
+            drawCircle(p.x * cellSize, p.y * cellSize, 1);
         }
     }
 
@@ -140,45 +143,70 @@ void Render::drawPreview() {
         playerScrPos.y,
         playerScrPos.x + cosf(Game::player->rotationAngleRad) * (cellSize / 2.5f),
         playerScrPos.y + sinf(-Game::player->rotationAngleRad) * (cellSize / 2.5f));
-
-    // direction vector
-    //SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
-    //SDL_RenderDrawLine(renderer,
-    //    Game::player->position.x * cellSize + cosf(Game::player->rotationAngleRad) * (cellSize / 2.5f),
-    //    Game::player->position.y * cellSize + sinf(-Game::player->rotationAngleRad) * (cellSize / 2.5f),
-    //    Game::player->position.x * cellSize + cosf(Game::player->rotationAngleRad) * (cellSize / 2.5f) + Game::player->direction.x * (cellSize / 2.5f),
-    //    Game::player->position.y * cellSize + sinf(-Game::player->rotationAngleRad) * (cellSize / 2.5f) + Game::player->direction.y * (cellSize / 2.5f));
-    //
-    //Debug::printVector("direction", Game::player->direction);
 }
 
-std::vector<vec2> Render::getPointsDDA(const float x1, const float y1, const float x2, const float y2) {
+std::vector<vec2> Render::getRayIntersections(float x1, float y1, float x2, float y2) {
     std::vector<vec2> points;
 
-    int dx = x2 - x1;
-    int dy = y2 - y1;
+    float dx = x2 - x1;
+    float dy = y2 - y1;
 
-    int steps = std::max(std::abs(dx), std::abs(dy));
+    float m = 0;
+    if(dx != 0) m = dy / dx;
 
-    float xIncrement = static_cast<float>(dx) / steps;
-    float yIncrement = static_cast<float>(dy) / steps;
+    vec2 dir = normalize(vec2(dx, dy));
+    float angle = atan2f(dir.y, dir.x);
 
-    float x = static_cast<float>(x1);
-    float y = static_cast<float>(y1);
+    float firstX = 0;
+    float firstY = 0;
 
-    for (int i = 0; i <= steps; ++i) {
-        // Calculate the fractional parts of x and y
-        float fracX = x - static_cast<int>(x);
-        float fracY = y - static_cast<int>(y);
+    // Check the quadrants
+    bool right;
+    bool down;
+    ivec2 dirRound = ivec2(ceil(dir.x), ceil(dir.y));
+    right = dirRound.x == 1;
+    down = dirRound.y == 1;
 
-        // Check if the fractional parts are close to 0 or 1
-        if (fracX <= 0.01f || fracX >= 0.99f || fracY <= 0.01f || fracY >= 0.99f) {
-            points.emplace_back(vec2(x, y));
-        }
+    firstX = right ? ceil(x1) : floor(x1);
+    firstY = y1 + (firstX - x1) * m;
 
-        x += xIncrement;
-        y += yIncrement;
+    Debug::printVector("dirRound", dirRound, false);
+    std::cout << "slope: " << m << '\n';
+    
+    points.emplace_back(firstX, firstY);
+
+    float x = firstX;
+    float y = firstY;
+
+    for (int i = 0; i < dof; i++) {
+        x += right ? 1 : -1;
+        y += right ? m : -m;
+        points.emplace_back(x, y);
     }
 
     return points;
+}
+
+vec2 Render::normalize(const vec2& v) {
+    float length = std::sqrt(v.x * v.x + v.y * v.y);
+
+    if (length != 0.0f) {
+        float invLength = 1.0f / length;
+        return vec2(v.x * invLength, v.y * invLength);
+    }
+    else {
+        return vec2(0.0f, 0.0f); // Return a default value for zero vectors
+    }
+}
+
+float Render::magnitude(const vec2& v) {
+    return std::sqrt(v.x * v.x + v.y * v.y);
+}
+
+float Render::dot(const vec2& v1, const vec2& v2) {
+    return v1.x * v2.x + v1.y * v2.y;
+}
+
+float Render::projection(const vec2& projector, const vec2& floor) {
+    return dot(projector, floor) / magnitude(floor);
 }

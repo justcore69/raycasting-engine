@@ -12,6 +12,7 @@ int Game::time = 0;
 float Game::deltaTime = SDL_GetTicks();
 float Game::prevFrameTime = 0;
 float Game::normTime = 0;
+int Game::fps = 0;
 
 void Game::init() {
 
@@ -73,11 +74,12 @@ void Game::update() {
     Uint32 currentFrameTime = SDL_GetTicks();
     deltaTime = (currentFrameTime - prevFrameTime) / 1000.0f; // Convert to seconds
     prevFrameTime = currentFrameTime;
+    fps = 1 / deltaTime;
 
     time++;
     normTime += deltaTime;
 
-    std::cout << "normTime: " << normTime << "; deltaTime: " << deltaTime << '\n';
+    //std::cout << "normTime: " << normTime << ";\t FPS: " << fps << '\n';
     //
 
     player->update();
@@ -86,4 +88,9 @@ void Game::update() {
 
 void Game::close() {
     std::cout << "Game closed.\n";
+}
+
+char Game::getMapTile(std::vector<std::string> m, vec2 pos)
+{
+    return m[pos.y][pos.x];
 }

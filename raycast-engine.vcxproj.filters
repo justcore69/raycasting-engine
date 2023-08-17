@@ -24,9 +24,6 @@
     <ClCompile Include="src\Render.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\gameObjects\TestDot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\utils\Color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -45,9 +42,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Render.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\gameObjects\TestDot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\utils\Color.h">

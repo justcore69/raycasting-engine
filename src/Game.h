@@ -4,6 +4,8 @@
 #include<string>
 #include<vector>
 
+#include<utils/glm/vec2.hpp>
+
 #include"AssetLoader.h"
 #include"gameObjects/Player.h"
 
@@ -22,11 +24,14 @@ public:
 	static int time;
 	static float deltaTime;
 	static float normTime;
+	static int fps;
 
 	static void init();
 	static void handleEvents();
 	static void update();
 	static void close();
+
+	static char getMapTile(std::vector<std::string> m, glm::vec2 pos);
 
 private:
 	static float prevFrameTime;

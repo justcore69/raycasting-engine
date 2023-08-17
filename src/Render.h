@@ -17,6 +17,7 @@ public:
 	static const int SCREEN_HEIGHT = 480;
 
 	static float fov;
+	static int dof;
 
 	static SDL_Window* window;
 	static SDL_Renderer* renderer;
@@ -34,6 +35,11 @@ public:
 
 	static void drawPreview();
 
-	static std::vector<vec2> getPointsDDA(const float x1, const float y1, const float x2, const float y2);
+	static std::vector<vec2> getRayIntersections(float x1, float y1, float x2, float y2);
+
+	static vec2 normalize(const vec2& v);
+	static float magnitude(const vec2& v);
+	static float dot(const vec2& v, const vec2& v2);
+	static float projection(const vec2& projector, const vec2& floor);
 };
 
