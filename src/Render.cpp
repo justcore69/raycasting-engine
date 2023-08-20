@@ -39,6 +39,34 @@ void Render::renderEverything() {
 }
 
 void Render::renderScene() {
+    // Render sky
+    SDL_SetRenderDrawColor(renderer, 6, 10, 19, 255);
+
+    SDL_Rect skyRect;
+    skyRect.x = 0;
+    skyRect.y = 0;
+    skyRect.w = SCREEN_WIDTH;
+    skyRect.h = SCREEN_HEIGHT;
+    SDL_RenderFillRect(renderer, &skyRect);
+
+    // Render floor
+
+    for (int y = SCREEN_HEIGHT/2; y < SCREEN_HEIGHT; y+=SCREEN_DIVIDER) {
+        float divider = static_cast<int>(SCREEN_HEIGHT + 64 - y) / 15;
+        if (divider < 1) divider = 1;
+
+        SDL_SetRenderDrawColor(renderer, 134 / divider, 80 / divider, 36 / divider, 255);
+
+        SDL_Rect rect;
+        rect.x = 0;
+        rect.y = y;
+        rect.w = SCREEN_WIDTH;
+        rect.h = SCREEN_DIVIDER;
+
+        SDL_RenderFillRect(renderer, &rect);
+    }
+
+    // Render walls
     rayDistances.clear();
     for (int i = 0; i < RAYS_COUNT; i++) {
         float step = fov / RAYS_COUNT;
@@ -49,10 +77,10 @@ void Render::renderScene() {
         float dist = castRay(Game::player->position.x, Game::player->position.y, ray.x, ray.y);
         rayDistances.push_back(dist);
         
+        // Fish eye fix
         float rayAngle = atan2f(ray.y - Game::player->position.y, ray.x - Game::player->position.x);
         float playerAngle = atan2f(Game::player->direction.y, Game::player->direction.x);
         dist *= cosf(rayAngle - playerAngle);
-        //Debug::printVector("angles", vec2(atan2f(Game::player->direction.y, Game::player->direction.x), atan2f(ray.y, ray.x)), true);
 
         if (dist < 1) dist = 1;
         float height = SCREEN_HEIGHT / dist;
