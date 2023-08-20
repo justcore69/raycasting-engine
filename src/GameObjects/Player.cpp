@@ -48,7 +48,7 @@ vec2 Player::getMapPosition(std::vector<std::string> map) {
 	}
     for (int y = 0; y < Game::map.size(); y++) {
         for (int x = 0; x < Game::map[y].size(); x++) {
-            if (Game::map[y][x] == 'P') {
+            if (Game::map[y][x] == Game::MP_PLAYER) {
                 std::cout << "Player position on the map is vec(" << x << ", " << y << ");\n";
                 return vec2(x, y);
             }

@@ -8,8 +8,8 @@ SDL_Renderer* Render::renderer = NULL;
 
 bool Render::init()
 {
-    fov = 90 * (M_PI / 180);
-    dof = 6;
+    fov = 70 * (M_PI / 180);
+    dof = 10;
 
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -18,7 +18,7 @@ bool Render::init()
         return false;
     }
 
-    window = SDL_CreateWindow("Raycast Engine with SDL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, false);
+    window = SDL_CreateWindow("Raycasting Engine with SDL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, false);
     renderer = SDL_CreateRenderer(window, -1, 0);
 
     std::cout << "Render initialized.\n";
@@ -39,11 +39,35 @@ void Render::renderEverything() {
 }
 
 void Render::renderScene() {
-    //dot->position = vec2(SCREEN_WIDTH/2 + sinf(Game::normTime) * 64, SCREEN_HEIGHT/2 + cosf(Game::normTime) * 64);
-    //SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    //SDL_RenderDrawPoint(renderer, dot->position.x, dot->position.y);
+    rayDistances.clear();
+    for (int i = 0; i < RAYS_COUNT; i++) {
+        float step = fov / RAYS_COUNT;
 
-    drawWallLine(powf(cosf(Game::normTime), 2) * SCREEN_HEIGHT, SCREEN_WIDTH / 2, Color::green);
+        vec2 ray = vec2(Game::player->position.x + 1 * cosf(Game::player->rotationAngleRad + (step * i) - fov / 2),
+            Game::player->position.y + 1 * -sinf(Game::player->rotationAngleRad + (step * i) - fov / 2));
+
+        float dist = castRay(Game::player->position.x, Game::player->position.y, ray.x, ray.y);
+        rayDistances.push_back(dist);
+        
+        float angle = atan2f(ray.x * Game::player->direction.y - ray.y * Game::player->direction.x, ray.x * Game::player->direction.x + ray.y * Game::player->direction.y);
+        //dist = dist * cosf(angle);
+        //Debug::printVector("angles", vec2(atan2f(Game::player->direction.y, Game::player->direction.x), atan2f(ray.y, ray.x)), true);
+
+        if (dist < 1) dist = 1;
+        float height = SCREEN_HEIGHT / dist;
+
+        Color wallColor = Color(128 / (dist * dist), 128 / (dist * dist), 128 / (dist * dist));
+
+        if (!isnan(dist)) {
+            for (int j = 0; j < SCREEN_DIVIDER; j++) {
+                drawWallLine(height, SCREEN_WIDTH - j - i * SCREEN_DIVIDER, wallColor);
+            }
+        }
+        else {
+            
+        }
+
+    }
 }
 
 void Render::renderUI() {
@@ -58,13 +82,9 @@ void Render::destroy() {
     std::cout << "Render destroyed. SDL_Quit()\n";
 }
 
-void Render::drawWallLine(float height, float screenPosX, Color color) {
+void Render::drawWallLine(float height, int screenPosX, Color color) {
     SDL_SetRenderDrawColor(renderer, color.R, color.G, color.B, color.A);
     SDL_RenderDrawLineF(renderer, screenPosX, SCREEN_HEIGHT/2 - height/2, screenPosX, SCREEN_HEIGHT / 2 + height / 2);
-}
-
-void Render::drawWalls(Player player) {
-
 }
 
 void Render::drawCircle(int centerX, int centerY, int radius) {
@@ -101,7 +121,7 @@ void Render::drawPreview() {
             cell.w = cellSize;
             cell.h = cellSize;
 
-            if (Game::map[y][x] == '#') { // Draw wall
+            if (Game::map[y][x] == Game::MP_WALL) { // Draw wall
                 SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
                 SDL_RenderDrawRect(renderer, &cell);
             }
@@ -115,20 +135,28 @@ void Render::drawPreview() {
     vec2 playerScrPos = vec2(Game::player->position.x * cellSize, Game::player->position.y * cellSize);
 
     // Draw rays
-    for (int i = 1; i < 2; i++) {
-        float step = fov / 2;
+    for (int i = 0; i < RAYS_COUNT; i++) {
+        float step = fov / RAYS_COUNT;
 
-        vec2 ray = vec2(playerScrPos.x + 64 * cosf(Game::player->rotationAngleRad + (step * i) - fov/2),
-            playerScrPos.y + 64 * -sinf(Game::player->rotationAngleRad + (step * i) - fov/2));
+        vec2 ray = vec2(playerScrPos.x + 1 * cosf(Game::player->rotationAngleRad + (step * i) - fov/2),
+            playerScrPos.y + 1 * -sinf(Game::player->rotationAngleRad + (step * i) - fov/2));
+
+        //std::cout << rayDistances.size() << '\n';
+        float dist = rayDistances[i == 0 ? i : i - 1];
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-        SDL_RenderDrawLineF(renderer, playerScrPos.x, playerScrPos.y, ray.x, ray.y);
 
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        std::vector<vec2> points = getRayIntersections(playerScrPos.x/cellSize, playerScrPos.y / cellSize, ray.x / cellSize, ray.y / cellSize);
-        for (vec2 p : points) {
-            drawCircle(p.x * cellSize, p.y * cellSize, 1);
+        if (!isnan(dist)) {
+            SDL_RenderDrawLineF(renderer, playerScrPos.x, playerScrPos.y,
+                (ray.x - playerScrPos.x) * dist * cellSize + playerScrPos.x,
+                (ray.y - playerScrPos.y) * dist * cellSize + playerScrPos.y);
         }
+        else {
+            SDL_RenderDrawLineF(renderer, playerScrPos.x, playerScrPos.y,
+                (ray.x - playerScrPos.x) * 128 + playerScrPos.x, 
+                (ray.y - playerScrPos.y) * 128 + playerScrPos.y);
+        }
+        
     }
 
     // Draw player
@@ -145,9 +173,10 @@ void Render::drawPreview() {
         playerScrPos.y + sinf(-Game::player->rotationAngleRad) * (cellSize / 2.5f));
 }
 
-std::vector<vec2> Render::getRayIntersections(float x1, float y1, float x2, float y2) {
+std::vector<float> Render::rayDistances = {};
+float Render::castRay(float x1, float y1, float x2, float y2) {
     // Setup
-    std::vector<vec2> points;
+    float dist = std::numeric_limits<float>::max();
 
     float dx = x2 - x1;
     float dy = y2 - y1;
@@ -168,16 +197,23 @@ std::vector<vec2> Render::getRayIntersections(float x1, float y1, float x2, floa
     // Vertical lines handling
     float firstX = right ? ceil(x1) : floor(x1);
     float firstY = y1 + (firstX - x1) * m;
-    
-    points.emplace_back(firstX, firstY);
 
     float x = firstX;
     float y = firstY;
 
     for (int i = 0; i < dof; i++) {
+        float mapX = static_cast<int>(x);
+        float mapY = static_cast<int>(y);
+
+        if (!right) mapX -= 1;
+
+        if (Game::getMapTile(Game::map, ivec2(mapX, mapY)) == Game::MP_WALL) {
+            dist = distance(vec2(x1, y1), vec2(x, y));
+            break;
+        }
+
         x += right ? 1 : -1;
         y += right ? m : -m;
-        points.emplace_back(x, y);
     }
 
     // Horizontal lines handling
@@ -186,18 +222,29 @@ std::vector<vec2> Render::getRayIntersections(float x1, float y1, float x2, floa
     firstY = down ? ceil(y1) : floor(y1);
     firstX = x1 + (firstY - y1) * m;
 
-    points.emplace_back(firstX, firstY);
-
     x = firstX;
     y = firstY;
 
     for (int i = 0; i < dof; i++) {
+        float mapX = static_cast<int>(x);
+        float mapY = static_cast<int>(y);
+
+        if (!down) mapY -= 1;
+
+        if (Game::getMapTile(Game::map, ivec2(mapX, mapY)) == Game::MP_WALL) {            
+            float newDist = distance(vec2(x1, y1), vec2(x, y));
+            if (newDist < dist) { 
+                dist = distance(vec2(x1, y1), vec2(x, y)); 
+                break;
+            }
+        }
+
         x += down ? m : -m;
         y += down ? 1 : -1;
-        points.emplace_back(x, y);
     }
 
-    return points;
+    if (dist == std::numeric_limits<float>::max()) dist = std::numeric_limits<float>::quiet_NaN();
+    return dist;
 }
 
 vec2 Render::normalize(const vec2& v) {
@@ -212,14 +259,10 @@ vec2 Render::normalize(const vec2& v) {
     }
 }
 
-float Render::magnitude(const vec2& v) {
-    return std::sqrt(v.x * v.x + v.y * v.y);
-}
-
 float Render::dot(const vec2& v1, const vec2& v2) {
     return v1.x * v2.x + v1.y * v2.y;
 }
 
-float Render::projection(const vec2& projector, const vec2& floor) {
-    return dot(projector, floor) / magnitude(floor);
+float Render::distance(const vec2& v1, const vec2& v2) {
+    return sqrt(fabs(v2.x - v1.x) * fabs(v2.x - v1.x) + fabs(v2.y - v1.y) * fabs(v2.y - v1.y));
 }

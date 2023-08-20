@@ -15,6 +15,8 @@ static class Render
 public:
 	static const int SCREEN_WIDTH = 640;
 	static const int SCREEN_HEIGHT = 480;
+	static const int SCREEN_DIVIDER = 4;
+	static const int RAYS_COUNT = SCREEN_WIDTH / SCREEN_DIVIDER;
 
 	static float fov;
 	static int dof;
@@ -28,18 +30,17 @@ public:
 	static void renderUI();
 	static void destroy();
 
-	static void drawWallLine(float height, float screenPosX, Color color);
-	static void drawWalls(Player player);
+	static void drawWallLine(float height, int screenPosX, Color color);
 
 	static void drawCircle(int centerX, int centerY, int radius);
 
 	static void drawPreview();
 
-	static std::vector<vec2> getRayIntersections(float x1, float y1, float x2, float y2);
+	static std::vector<float> rayDistances;
+	static float castRay(float x1, float y1, float x2, float y2);
 
 	static vec2 normalize(const vec2& v);
-	static float magnitude(const vec2& v);
-	static float dot(const vec2& v, const vec2& v2);
-	static float projection(const vec2& projector, const vec2& floor);
+	static float dot(const vec2& v1, const vec2& v2);
+	static float distance(const vec2 &v1, const vec2 &v2);
 };
 

@@ -18,6 +18,9 @@ public:
 	static bool debugMode;
 
 	static std::vector<std::string> map;
+	static const char MP_AIR = '0';
+	static const char MP_WALL = '#';
+	static const char MP_PLAYER = 'P';
 
 	static Player* player;
 
@@ -31,7 +34,7 @@ public:
 	static void update();
 	static void close();
 
-	static char getMapTile(std::vector<std::string> m, glm::vec2 pos);
+	static char getMapTile(std::vector<std::string> m, glm::ivec2 pos);
 
 private:
 	static float prevFrameTime;

@@ -20,6 +20,10 @@ void Debug::printVector(std::string name, vec3 vec, bool endl)
 	}
 }
 
+void Debug::printFPS(bool endl) {
+	endl ? std::cout << "FPS: " << Game::fps << '\n' : std::cout << "FPS: " << Game::fps << "; ";
+}
+
 void Debug::print(std::string message) {
 	std::cout << message << '\n';
 }

@@ -79,8 +79,7 @@ void Game::update() {
     time++;
     normTime += deltaTime;
 
-    //std::cout << "normTime: " << normTime << ";\t FPS: " << fps << '\n';
-    //
+    //Debug::printFPS(true);
 
     player->update();
 
@@ -90,7 +89,8 @@ void Game::close() {
     std::cout << "Game closed.\n";
 }
 
-char Game::getMapTile(std::vector<std::string> m, vec2 pos)
+char Game::getMapTile(std::vector<std::string> m, ivec2 pos)
 {
+    if (pos.y >= m.size() || pos.x >= m[0].size()) return '.';
     return m[pos.y][pos.x];
 }

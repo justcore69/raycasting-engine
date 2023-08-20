@@ -14,8 +14,8 @@ public:
 	vec2 startPosition;
 	vec2 position;
 	vec2 direction;
-	float movementSpeed = 1;
-	float rotationSpeed = 2;
+	float movementSpeed = 2;
+	float rotationSpeed = 4;
 	float rotationAngleRad = 0;
 
 	bool keyW = false;
