@@ -49,8 +49,9 @@ void Render::renderScene() {
         float dist = castRay(Game::player->position.x, Game::player->position.y, ray.x, ray.y);
         rayDistances.push_back(dist);
         
-        float angle = atan2f(ray.x * Game::player->direction.y - ray.y * Game::player->direction.x, ray.x * Game::player->direction.x + ray.y * Game::player->direction.y);
-        //dist = dist * cosf(angle);
+        float rayAngle = atan2f(ray.y - Game::player->position.y, ray.x - Game::player->position.x);
+        float playerAngle = atan2f(Game::player->direction.y, Game::player->direction.x);
+        dist *= cosf(rayAngle - playerAngle);
         //Debug::printVector("angles", vec2(atan2f(Game::player->direction.y, Game::player->direction.x), atan2f(ray.y, ray.x)), true);
 
         if (dist < 1) dist = 1;
