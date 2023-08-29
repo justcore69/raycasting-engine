@@ -203,27 +203,28 @@ void Render::drawPreview() {
 }
 
 std::vector<float> Render::rayDistances = {};
-float Render::castRay(float x1, float y1, float x2, float y2) {
+float Render::castRay(float x1, float y1, float x2, float y2) { // Main raycasting algorithm here
     // Setup
     float dist = std::numeric_limits<float>::max();
 
     float dx = x2 - x1;
     float dy = y2 - y1;
 
+    // Slope of the ray
     float m = 0;
     if(dx != 0) m = dy / dx;
 
     vec2 dir = normalize(vec2(dx, dy));
     float angle = atan2f(dir.y, dir.x);
 
+    // Find quarter
     bool right;
     bool down;
+    ivec2 dirCeil = ivec2(ceil(dir.x), ceil(dir.y));
+    right = dirCeil.x == 1;
+    down = dirCeil.y == 1;
 
-    ivec2 dirRound = ivec2(ceil(dir.x), ceil(dir.y));
-    right = dirRound.x == 1;
-    down = dirRound.y == 1;
-
-    // Vertical lines handling
+    //// Vertical lines handling
     float firstX = right ? ceil(x1) : floor(x1);
     float firstY = y1 + (firstX - x1) * m;
 
@@ -236,16 +237,17 @@ float Render::castRay(float x1, float y1, float x2, float y2) {
 
         if (!right) mapX -= 1;
 
-        if (Game::getMapTile(Game::map, ivec2(mapX, mapY)) == Game::MP_WALL) {
+        if (Game::getMapTile(Game::map, ivec2(mapX, mapY)) == Game::MP_WALL) { // If we hit something on the map, get distance
             dist = distance(vec2(x1, y1), vec2(x, y));
             break;
         }
 
+        // Go to the next intersection point
         x += right ? 1 : -1;
         y += right ? m : -m;
     }
 
-    // Horizontal lines handling
+    //// Horizontal lines handling
     if (dx != 0) m = dx / dy;
 
     firstY = down ? ceil(y1) : floor(y1);
@@ -260,19 +262,20 @@ float Render::castRay(float x1, float y1, float x2, float y2) {
 
         if (!down) mapY -= 1;
 
-        if (Game::getMapTile(Game::map, ivec2(mapX, mapY)) == Game::MP_WALL) {            
+        if (Game::getMapTile(Game::map, ivec2(mapX, mapY)) == Game::MP_WALL) { // If we hit something on the map, get distance        
             float newDist = distance(vec2(x1, y1), vec2(x, y));
-            if (newDist < dist) { 
+            if (newDist < dist) { // Check if Horizontal distantion less than Vertical
                 dist = distance(vec2(x1, y1), vec2(x, y)); 
                 break;
             }
         }
 
+        // Go to the next intersection point
         x += down ? m : -m;
         y += down ? 1 : -1;
     }
 
-    if (dist == std::numeric_limits<float>::max()) dist = std::numeric_limits<float>::quiet_NaN();
+    if (dist == std::numeric_limits<float>::max()) dist = std::numeric_limits<float>::quiet_NaN(); // If ray hit nothing, return NaN
     return dist;
 }
 
